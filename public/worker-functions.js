@@ -37,7 +37,8 @@ async function openDbAsync() {
         dbReq.onupgradeneeded = e => {
             // console.log('Database needs upgrade!');
             let db = e.target.result;
-            let objectStore = db.createObjectStore("cards", { autoIncrement: true, keyPath: 'id' });
+            let objectStore = db.createObjectStore("cards", { autoIncrement: true, keyPath: 'index' });
+            // objectStore.createIndex("index", "index", { unique: true });
         };
     });
 };
@@ -50,8 +51,11 @@ async function addCardsAsync(arr) {
 
     const tx = db.transaction(["cards"], "readwrite");
 
+    var dbIndex = 1;
     arr.forEach((data) => {
+        data.index = dbIndex;
         let request = tx.objectStore("cards").put(data);
+        dbIndex += 1;
     });
 
     return new Promise(function (resolve, reject) {
@@ -86,8 +90,57 @@ async function clearTableAsync(tbl) {
     });
 };
 
+async function getPagedDataAsync(activePageNumb) {
+
+    const db = await openDbAsync();
+    const tx = db.transaction(["cards"], "readonly");
+    const store = tx.objectStore('cards');
+
+
+    let pagedData = {};
+
+    var countRequest = store.count();
+
+    countRequest.onsuccess = function (e) {
+        pagedData.activePage = activePageNumb == 0 ? 1 : activePageNumb;
+        pagedData.items = [];
+        pagedData.totalRecords = e.target.result;
+        pagedData.totalPage = e.target.result / 10 - 1;
+    }
+
+    // paging.
+    const startIndex = activePageNumb * 10 + 1;
+    const endIndex = startIndex == 0 ? 10 : (activePageNumb + 1) * 10;
+
+    const request = store.openCursor();
+
+    request.onsuccess = function (event) {
+
+        const cursor = event.target.result;
+        if (cursor) {
+            if (startIndex <= cursor.value.index && cursor.value.index <= endIndex) {
+                pagedData.items.push(cursor.value);
+            }
+            cursor.continue();
+        } else {
+            // no more results
+        }
+    };
+
+    return new Promise((resolve, reject) => {
+        tx.oncomplete = event =>{
+            db.close();
+            resolve(pagedData);
+        }
+        tx.onerror = event => reject(event.target);
+    });
+
+}
+
 self.onmessage = async (e) => {
-    if (e.data === 'getData') {
+    const process = JSON.parse(e.data);
+
+    if (process.method === 'fetchData') {
         // Call Vuex that new operation begins.
         const uniqueId = new Date().getTime();
         self.postMessage({ module: "operations", action: "startNewOperation", payload: uniqueId })
@@ -116,17 +169,19 @@ self.onmessage = async (e) => {
                         action: "insertCards",
                         payload: dataArr
                     });
-
-                // ??
-                self.postMessage(
-                    {
-                        module: "cards",
-                        action: "setTblData",
-                        payload: 0
-                    }
-                );
             }
         }
+    } else if (process.method === 'getPagedData') {
+        const activePage = process.params.activePage;
+        const pagedDataResult = await getPagedDataAsync(activePage);
+        self.postMessage(
+            {
+                module: "cards",
+                action: "setListViewData",
+                payload: pagedDataResult
+            }
+        );
+
     } else {
         throw new Error("Worker Function Not Found !");
     }

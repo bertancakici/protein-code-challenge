@@ -6,7 +6,7 @@
         <div class="text-center">
           <v-btn elevation="2" @click="importData" class="mt-5">
             Import Data
-            </v-btn>
+          </v-btn>
         </div>
 
         <v-virtual-scroll :items="operations" height="500" item-height="64">
@@ -83,7 +83,8 @@ export default {
       createOperation: "operationsModule/insertOperation",
     }),
     async importData() {
-      worker.postMessage("getData");
+      const message = { method: "fetchData"};
+      worker.postMessage(JSON.stringify(message));
     }
   },
 };

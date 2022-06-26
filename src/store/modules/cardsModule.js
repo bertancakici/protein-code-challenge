@@ -12,16 +12,16 @@ const state = {
 };
 
 const getters = {
-    getAll() {
+    getAll(state) {
         return state.cards;
     },
-    getTableHeaders() {
+    getTableHeaders(state) {
         return state.tableHeaders;
     },
-    getPagedData() {
+    listViewData(state) {
         return state.tblData;
     },
-    getGroupedData() {
+    getGroupedData(state) {
         const groupedData = [];
         state.cards.map((obj, i) => {
             var item = groupedData.find(t => t.cardType == obj.credit_card_type);
@@ -42,18 +42,18 @@ const mutations = {
     addCards(state, cardArr) {
         state.cards = cardArr;
     },
-    setTblViewModel(state, pageNumber) {
-        const startIndex = pageNumber * 10;
-        const endIndex = startIndex == 0 ? 9 : ((pageNumber + 1) * 10) - 1;
-        const pagedData = {
-            items: state.cards.slice(startIndex, endIndex),
-            totalPage: state.cards.length / 10 - 1,
-            totalRecords: state.cards.length,
-            activePage: pageNumber == 0 ? 1 : pageNumber,
-            pageSize: 10
-        }
+    setTblData(state,dto) {
+        // const startIndex = pageNumber * 10;
+        // const endIndex = startIndex == 0 ? 9 : ((pageNumber + 1) * 10) - 1;
+        // const pagedData = {
+        //     items: state.cards.slice(startIndex, endIndex),
+        //     totalPage: state.cards.length / 10 - 1,
+        //     totalRecords: state.cards.length,
+        //     activePage: pageNumber == 0 ? 1 : pageNumber,
+        //     pageSize: 10
+        // }
 
-        state.tblData = pagedData;
+        state.tblData = dto;
 
     },
 };
@@ -62,8 +62,8 @@ const actions = {
     insertCards({ commit }, dataArr) {
         commit("addCards", dataArr);
     },
-    setTblData({ commit }, activePage) {
-        commit("setTblViewModel", activePage);
+    setListViewData({ commit }, pagedData) {
+        commit("setTblData", pagedData);
     }
 
 };

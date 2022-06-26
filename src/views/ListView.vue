@@ -18,13 +18,13 @@
       </thead>
 
       <tbody>
-        <template v-if="!getPagedData.items">
+        <template v-if="!pagedData.items">
           <tr>
             <td colspan="3" class="text-center"> [no-data]</td>
           </tr>
         </template>
         <template v-else>
-          <tr v-for="card in getPagedData.items" :key="card.id">
+          <tr v-for="card in pagedData.items" :key="card.id">
             <td>{{ card.credit_card_number }}</td>
             <td>{{ card.credit_card_type }}</td>
             <td>{{ card.credit_card_expiry_date }}</td>
@@ -34,8 +34,11 @@
 
       <tfoot>
         <div class="text-center">
-          <v-pagination @input="getActivePageData" v-model="getPagedData.activePage" :length="getPagedData.totalPage">
+          <v-pagination @input="getActivePageData" v-model="pagedData.activePage" :length="pagedData.totalPage">
           </v-pagination>
+
+          <!-- <v-pagination v-model="pagedData.activePage" :length="pagedData.totalPage">
+          </v-pagination> -->
         </div>
       </tfoot>
 
@@ -45,22 +48,36 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import worker from "/public/worker"
+import { mapGetters } from "vuex"; // mapState
 
 export default {
+  async mounted() {
+    const message = {
+      method: "getPagedData",
+      params: {
+        activePage: 0
+      }
+    };
+    await worker.postMessage(JSON.stringify(message));
+  },
   computed: {
     ...mapGetters({
-      getPagedData: "cardsModule/getPagedData"
+      pagedData: "cardsModule/listViewData"
     })
+   
   },
   methods: {
-    ...mapActions({
-      setTblData: "cardsModule/setTblData"
-    }),
-    getActivePageData(activePageNumb) {
-      this.setTblData(activePageNumb);
+      getActivePageData(e) {
+        const message = {
+          method: "getPagedData",
+          params: {
+            activePage: e
+          }
+        };
+        worker.postMessage(JSON.stringify(message));
+      }
     }
-  }
 };
 </script>
 
