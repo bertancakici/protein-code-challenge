@@ -1,43 +1,41 @@
 /*
-    ImportView'deki listeye göre düzenlenecek.
-    Başlangıç süresi, bitiş süresi tutulabilir.
-    circular progress'e uygun düzenle. => https://vuetifyjs.com/en/components/progress-circular/#usage
+    + ImportView'deki listeye göre düzenlenecek.
+    + Başlangıç süresi, bitiş süresi tutulabilir.
+    + circular progress'e uygun düzenle. => https://vuetifyjs.com/en/components/progress-circular/#usage
+    - Ne kadar sürede tamamlandığı düzenlenecek. (review'de yap.)
 */
 const state = {
-    itemSchema: {
-        id: 0,
-        startedAt: null,
-        finishedAt: null,
-        inProgress: true,
-    },
-    operations: [],
+    operations: []
 };
 
 const getters = {
     getAll() {
-        // const tempData = ;
-        // const sortedData = tempData
-        //     .sort((a, b) => (b.id < a.id ? -1 : 1))
-        //     .filter((v, i) => i < 10);
-        return state.operations;
+        return state.operations.sort((a, b) => (b.id < a.id ? -1 : 1))
+        .filter((v, i) => i < 10);;
     },
     getTotal() {
         return state.operations.length;
     },
 };
+
 const mutations = {
     newOperation(state, uniqueId) {
-        const newItem = Object.assign({},state.itemSchema);
-        newItem.id = uniqueId;
-        newItem.startedAt = new Date();
-        newItem.finishedAt = null;
+        // order'landiği için ilk item son object oluyor.
+        const lastItemId = state.operations[0]?.id ?? 0 ;
+        // console.log(lastItemId);
+        const newItem = {
+            id : lastItemId + 1,
+            uid: uniqueId,
+            startedAt : new Date(),
+            finishedAt : null,
+            inProgress:true
+        }
         state.operations.push(newItem);
     },
     updateProgress(state, operationDto) {
-        const itemToUpdate = state.operations.find((t) => t.id == operationDto.id);
+        const itemToUpdate = state.operations.find((t) => t.uid == operationDto.uid);
         itemToUpdate.finishedAt = operationDto.finishedAt;
         itemToUpdate.inProgress = false;
-        state.operations = state.operations;
     },
 };
 

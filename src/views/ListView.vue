@@ -1,30 +1,66 @@
 <template>
-  <div class="list">
-    <h1>This is list page</h1>
-    <p> {{ cc }}</p>
-    <v-btn @click="sendMsg">Gönder</v-btn>
-  </div>
+  <v-simple-table dark>
+
+    <template v-slot:default>
+
+      <thead>
+        <tr>
+          <th class="text-left">
+            card number
+          </th>
+          <th class="text-left">
+            card type
+          </th>
+          <th class="text-left">
+            expiration date
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <template v-if="!getPagedData.items">
+          <tr>
+            <td colspan="3" class="text-center"> [no-data]</td>
+          </tr>
+        </template>
+        <template v-else>
+          <tr v-for="card in getPagedData.items" :key="card.id">
+            <td>{{ card.credit_card_number }}</td>
+            <td>{{ card.credit_card_type }}</td>
+            <td>{{ card.credit_card_expiry_date }}</td>
+          </tr>
+        </template>
+      </tbody>
+
+      <tfoot>
+        <div class="text-center">
+          <v-pagination @input="getActivePageData" v-model="getPagedData.activePage" :length="getPagedData.totalPage">
+          </v-pagination>
+        </div>
+      </tfoot>
+
+    </template>
+
+  </v-simple-table>
 </template>
 
 <script>
-
-// import worker from "/public/worker-api"
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions, mapGetters } from "vuex";
 
 export default {
-  computed:{
+  computed: {
     ...mapGetters({
-      cc: "operationsModule/getAName"
+      getPagedData: "cardsModule/getPagedData"
     })
   },
-  methods:{
+  methods: {
     ...mapActions({
-      setName:"operationsModule/cname"
+      setTblData: "cardsModule/setTblData"
     }),
-    sendMsg(){
-      this.setName("halil");
+    getActivePageData(activePageNumb) {
+      this.setTblData(activePageNumb);
     }
   }
-}
+};
 </script>
 

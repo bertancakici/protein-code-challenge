@@ -1,5 +1,3 @@
-
-// implements
 async function fetchDataAsync() {
     // fetching data from url;
     let result = {};
@@ -101,20 +99,38 @@ self.onmessage = async (e) => {
             if (insertCardResult) {
                 // state güncelle.
                 const finishedAt = new Date();
+
                 self.postMessage(
                     {
                         module: "operations",
                         action: "finishOperation",
                         payload: {
-                            id: uniqueId,
+                            uid: uniqueId,
                             finishedAt: finishedAt
                         }
                     });
 
+                self.postMessage(
+                    {
+                        module: "cards",
+                        action: "insertCards",
+                        payload: dataArr
+                    });
+
+                // ??
+                self.postMessage(
+                    {
+                        module: "cards",
+                        action: "setTblData",
+                        payload: 0
+                    }
+                );
             }
         }
     } else {
         throw new Error("Worker Function Not Found !");
-        // self.postMessage("");
     }
 };
+
+
+
