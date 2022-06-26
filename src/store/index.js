@@ -6,8 +6,9 @@ import operationsModule from "./modules/operationsModule"
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
     modules: {
         operationsModule
     }
 })
+export default store;

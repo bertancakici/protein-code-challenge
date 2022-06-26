@@ -40,7 +40,9 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 
-import { getData, insertCards } from "/public/worker-api";
+import worker from "/public/worker"
+
+// import { getData, insertCards } from "/public/worker-api";
 
 export default {
   data(){
@@ -59,6 +61,7 @@ export default {
       createOperation: "operationsModule/insertOperation",
     }),
     async importData() {
+      worker.postMessage("getData");
       /*
         Gerektiği yerde akışı düzenle
         1- Başlangıç Zamanını Al,
@@ -70,15 +73,15 @@ export default {
       */
 
       // progress için düzenleme gerekiyor.
-      const response = await getData(this.requestUrl);
-      if (response.succeded) {
-        const dataArr = response.data;
-        const insertCardResult = await insertCards(dataArr);
-        // console.log(insertCardResult, "insertCardResult");
-        if (insertCardResult) {
-          // state güncelle.
-        }
-      }
+      // const response = await getData(this.requestUrl);
+      // if (response.succeded) {
+      //   const dataArr = response.data;
+      //   const insertCardResult = await insertCards(dataArr);
+      //   // console.log(insertCardResult, "insertCardResult");
+      //   if (insertCardResult) {
+      //     // state güncelle.
+      //   }
+      // }
     },
     newOperation() {
       const item = {

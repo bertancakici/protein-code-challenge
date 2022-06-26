@@ -3,6 +3,8 @@
     Başlangıç süresi, bitiş süresi tutulabilir.
     circular progress'e uygun düzenle. => https://vuetifyjs.com/en/components/progress-circular/#usage
 */
+// const worker = new Worker("worker.js", { type: "module" });
+import worker from "/public/worker";
 const state = {
     operations: [{
             id: 1,
@@ -40,17 +42,23 @@ const getters = {
     getTotal() {
         return state.operations.length;
     },
+    getAName() {
+        return state.sname;
+    }
 };
 const mutations = {
     addOperation(state, operation) {
         state.operations.push(operation);
+    },
+    changeName(state, val) {
+        state.sname = val;
     },
 };
 
 const actions = {
     insertOperation({ commit }, operationItem) {
         commit("addOperation", operationItem);
-    },
+    }
 };
 
 const operationsModule = {
