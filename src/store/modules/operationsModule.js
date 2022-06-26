@@ -3,62 +3,51 @@
     Başlangıç süresi, bitiş süresi tutulabilir.
     circular progress'e uygun düzenle. => https://vuetifyjs.com/en/components/progress-circular/#usage
 */
-// const worker = new Worker("worker.js", { type: "module" });
-import worker from "/public/worker";
 const state = {
-    operations: [{
-            id: 1,
-            text: "Real-Time",
-            icon: "mdi-clock",
-            startedAt: "DateTime",
-            finishedAt: "DateTime",
-            inProgress: true,
-        },
-        {
-            id: 2,
-            text: "Audience",
-            icon: "mdi-account",
-            startedAt: "DateTime",
-            finishedAt: "DateTime",
-            inProgress: true,
-        },
-        {
-            id: 3,
-            text: "Conversions",
-            icon: "mdi-flag",
-            startedAt: "DateTime",
-            finishedAt: "DateTime",
-            inProgress: true,
-        },
-    ],
+    itemSchema: {
+        id: 0,
+        startedAt: null,
+        finishedAt: null,
+        inProgress: true,
+    },
+    operations: [],
 };
 
 const getters = {
     getAll() {
-        return state.operations
-            .sort((a, b) => (b.id < a.id ? -1 : 1))
-            .filter((v, i) => i < 10);
+        // const tempData = ;
+        // const sortedData = tempData
+        //     .sort((a, b) => (b.id < a.id ? -1 : 1))
+        //     .filter((v, i) => i < 10);
+        return state.operations;
     },
     getTotal() {
         return state.operations.length;
     },
-    getAName() {
-        return state.sname;
-    }
 };
 const mutations = {
-    addOperation(state, operation) {
-        state.operations.push(operation);
+    newOperation(state, uniqueId) {
+        const newItem = Object.assign({},state.itemSchema);
+        newItem.id = uniqueId;
+        newItem.startedAt = new Date();
+        newItem.finishedAt = null;
+        state.operations.push(newItem);
     },
-    changeName(state, val) {
-        state.sname = val;
+    updateProgress(state, operationDto) {
+        const itemToUpdate = state.operations.find((t) => t.id == operationDto.id);
+        itemToUpdate.finishedAt = operationDto.finishedAt;
+        itemToUpdate.inProgress = false;
+        state.operations = state.operations;
     },
 };
 
 const actions = {
-    insertOperation({ commit }, operationItem) {
-        commit("addOperation", operationItem);
-    }
+    startNewOperation({ commit }, uniqueId) {
+        commit("newOperation",uniqueId);
+    },
+    finishOperation({ commit }, dto) {
+        commit("updateProgress", dto);
+    },
 };
 
 const operationsModule = {

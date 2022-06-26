@@ -20,12 +20,22 @@
 
               <v-list-item-content>
                 <v-list-item-title>
-                  Operation <strong>ID {{ item.id }}</strong>
+                  <!-- {{ item.text }} -->
+                    Started/Finished At {{ item.startedAt }}  <br>
+                    <strong> transaction time: calculate</strong>
                 </v-list-item-title>
               </v-list-item-content>
 
               <v-list-item-action>
-                <v-icon small> mdi-open-in-new </v-icon>
+                <template v-if="item.inProgress">
+                  <v-progress-circular
+                    indeterminate
+                    color="primary"
+                  ></v-progress-circular>
+                </template>
+                <template v-else>
+                    <v-icon style="color:green;" large> mdi-checkbox-marked-circle </v-icon>
+                </template>
               </v-list-item-action>
             </v-list-item>
 
@@ -40,15 +50,16 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 
-import worker from "/public/worker"
+import worker from "/public/worker";
 
 // import { getData, insertCards } from "/public/worker-api";
 
 export default {
-  data(){
-    return{
-      requestUrl:"https://random-data-api.com/api/business_credit_card/random_card?size=100",
-    }
+  data() {
+    return {
+      requestUrl:
+        "https://random-data-api.com/api/business_credit_card/random_card?size=100",
+    };
   },
   computed: {
     ...mapGetters({

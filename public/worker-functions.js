@@ -1,3 +1,4 @@
+
 // implements
 async function fetchDataAsync() {
     // fetching data from url;
@@ -24,14 +25,14 @@ async function fetchDataAsync() {
 async function openDbAsync() {
     var dbReq = await indexedDB.open("x-shop", 1);
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
-        dbReq.onsuccess = function(e) {
+        dbReq.onsuccess = function (e) {
             // console.log("Db is opened");
             resolve(e.target.result);
         };
 
-        dbReq.onerror = function(event) {
+        dbReq.onerror = function (event) {
             reject("An Error occured while opening database");
         };
 
@@ -55,8 +56,8 @@ async function addCardsAsync(arr) {
         let request = tx.objectStore("cards").put(data);
     });
 
-    return new Promise(function(resolve, reject) {
-        tx.oncomplete = function(event) {
+    return new Promise(function (resolve, reject) {
+        tx.oncomplete = function (event) {
             // console.log("Transaction completed! All Datas Has Been Added");
             resolve(true);
         };
@@ -72,7 +73,7 @@ async function clearTableAsync(tbl) {
     // clearing object store req
     const request = db.transaction(tbl, "readwrite").objectStore(tbl).clear();
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
         request.onsuccess = () => {
             // console.log(`Object Store "${tbl}" cleared!`);
@@ -87,9 +88,11 @@ async function clearTableAsync(tbl) {
     });
 };
 
-self.onmessage = async(e) => {
+self.onmessage = async (e) => {
     if (e.data === 'getData') {
-        // Perform the calculation
+        // Call Vuex that new operation begins.
+        const uniqueId = new Date().getTime();
+        self.postMessage({ module: "operations", action: "startNewOperation", payload: uniqueId })
         const response = await fetchDataAsync();
         if (response.succeded) {
             const dataArr = response.data;
@@ -97,10 +100,21 @@ self.onmessage = async(e) => {
             // console.log(insertCardResult, "insertCardResult");
             if (insertCardResult) {
                 // state güncelle.
+                const finishedAt = new Date();
+                self.postMessage(
+                    {
+                        module: "operations",
+                        action: "finishOperation",
+                        payload: {
+                            id: uniqueId,
+                            finishedAt: finishedAt
+                        }
+                    });
 
             }
         }
     } else {
         throw new Error("Worker Function Not Found !");
+        // self.postMessage("");
     }
 };
