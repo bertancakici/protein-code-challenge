@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "test":"jest"
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
@@ -26,10 +27,18 @@
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "@vue/test-utils": "^1.1.3",
-    "chai": "^4.2.0",
-    "comlink": "^4.3.1",
+    "jest": "^28.1.1",
     "vue-cli-plugin-vuetify": "~2.5.1",
     "vue-template-compiler": "^2.6.14",
     "worker-plugin": "^5.0.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "ts",
+      "json",
+      "vue"
+    ],
+    "testURL": "http://localhost/"
   }
 }

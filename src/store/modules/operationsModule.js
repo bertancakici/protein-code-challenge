@@ -49,7 +49,7 @@ const actions = {
     },
     finishOperation({ commit }, dto) {
         commit("updateProgress", dto);
-    },
+    }
 };
 
 const operationsModule = {
