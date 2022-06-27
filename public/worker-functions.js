@@ -39,7 +39,7 @@ async function openDbAsync() {
             // console.log('Database needs upgrade!');
             let db = e.target.result;
             let objectStore = db.createObjectStore("cards", { autoIncrement: true, keyPath: 'index' });
-            // objectStore.createIndex("index", "index", { unique: true });
+            objectStore.createIndex("index", "index", { unique: true });
         };
     });
 };
@@ -99,39 +99,38 @@ async function getPagedDataAsync(activePageNumb) {
     const tx = db.transaction(["cards"], "readonly");
     const store = tx.objectStore('cards');
 
-    let pagedData = {};
-
-    var countRequest = store.count();
-
-    countRequest.onsuccess = function (e) {
-        pagedData.activePage = activePageNumb == 0 ? 1 : activePageNumb;
-        pagedData.items = [];
-        pagedData.totalRecords = e.target.result;
-        pagedData.totalPage = e.target.result / 10 - 1;
-    }
-
-    // paging.
-    const startIndex = activePageNumb * 10 + 1;
-    const endIndex = startIndex == 0 ? 10 : (activePageNumb + 1) * 10;
-
-    const request = store.openCursor();
-
-    request.onsuccess = function (event) {
-
-        const cursor = event.target.result;
-        if (cursor) {
-            if (startIndex <= cursor.value.index && cursor.value.index <= endIndex) {
-                pagedData.items.push(cursor.value);
-            }
-            cursor.continue();
-        } else {
-            // no more results
-        }
-    };
 
     return new Promise((resolve, reject) => {
+        let pagedData = {};
+        var countRequest = store.count();
+        countRequest.onsuccess = function (e) {
+            pagedData.activePage = activePageNumb == 0 ? 1 : activePageNumb;
+            pagedData.items = [];
+            pagedData.totalRecords = e.target.result;
+            pagedData.totalPage = parseInt(e.target.result / 10) - 1;
+        }
+        // paging.
+        const startIndex = activePageNumb * 10 + 1;
+        const endIndex = startIndex == 0 ? 10 : (activePageNumb + 1) * 10;
+
+        const request = store.openCursor();
+
+        request.onsuccess = function (event) {
+
+            const cursor = event.target.result;
+            if (cursor) {
+                if (startIndex <= cursor.value.index && cursor.value.index <= endIndex) {
+                    pagedData.items.push(cursor.value);
+                }
+                cursor.continue();
+            } else {
+                // no more results
+            }
+        };
+
+
+
         tx.oncomplete = event => {
-            db.close();
             resolve(pagedData);
         }
         tx.onerror = event => reject(event.target);
@@ -210,6 +209,15 @@ self.onmessage = async (e) => {
             }
         );
 
+        // updating last activepage ;
+        self.postMessage(
+            {
+                module: "cards",
+                action: "setLastActivePage",
+                payload: pagedDataResult.activePage
+        });
+
+
     } else if (process.method === 'getAnalyzePageData') {
         const data = await getAnalyzePageDataAsync();
         self.postMessage(
@@ -218,6 +226,7 @@ self.onmessage = async (e) => {
                 action: "setGroupedData",
                 payload: data
             });
+
 
     } else {
         throw new Error("Worker Function Not Found !");

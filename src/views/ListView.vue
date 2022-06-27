@@ -50,20 +50,23 @@
 <script>
 import worker from "/public/worker"
 import { mapGetters } from "vuex"; // mapState
+import store from '@/store';
 
 export default {
   async mounted() {
+    debugger;
     const message = {
       method: "getPagedData",
       params: {
-        activePage: 0
+        activePage: this.getLastActivePage
       }
     };
     await worker.postMessage(JSON.stringify(message));
   },
   computed: {
     ...mapGetters({
-      pagedData: "cardsModule/listViewData"
+      pagedData: "cardsModule/listViewData",
+      getLastActivePage:"cardsModule/getLastActivePage"
     })
    
   },

@@ -8,7 +8,9 @@ const state = {
     ],
     cards: [],
     tblData: {},
-    groupedData: {}
+    lastActivePage:0,
+    groupedData: {},
+    
 };
 
 const getters = {
@@ -23,6 +25,9 @@ const getters = {
     },
     getGroupedData(state) {
         return state.groupedData;
+    },
+    getLastActivePage(state){
+        return state.lastActivePage;
     }
 };
 
@@ -36,6 +41,9 @@ const mutations = {
     },
     insertGroupedData(state, data){
         state.groupedData = data;
+    },
+    updateLastActivePage(state,num){
+        state.lastActivePage = num;
     }
 
 };
@@ -49,6 +57,9 @@ const actions = {
     },
     setGroupedData({commit}, groupedDataArr){
         commit("insertGroupedData", groupedDataArr);
+    },
+    setLastActivePage({commit},pageNumber){
+        commit("updateLastActivePage", pageNumber);
     }
 
 };
