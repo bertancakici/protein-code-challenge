@@ -53,12 +53,22 @@ import { mapGetters } from "vuex"; // mapState
 import store from '@/store';
 
 export default {
+  data() {
+    /*
+      View açıldığında kaldığı sayfadan devam etmek için kullanılır.
+      false 'a çekilirse, her sayfa açıldığında 1. sayfadan başlar.
+      datatable'daki State saving  mantığı ile çalışır.
+      => https://datatables.net/examples/basic_init/state_save.html
+     */
+    return {
+      saveActivePage: true
+    }
+  },
   async mounted() {
-    debugger;
     const message = {
       method: "getPagedData",
       params: {
-        activePage: this.getLastActivePage
+        activePage: this.saveActivePage == true ? this.getLastActivePage : 0
       }
     };
     await worker.postMessage(JSON.stringify(message));
@@ -66,21 +76,21 @@ export default {
   computed: {
     ...mapGetters({
       pagedData: "cardsModule/listViewData",
-      getLastActivePage:"cardsModule/getLastActivePage"
+      getLastActivePage: "cardsModule/getLastActivePage"
     })
-   
+
   },
   methods: {
-      getActivePageData(e) {
-        const message = {
-          method: "getPagedData",
-          params: {
-            activePage: e
-          }
-        };
-        worker.postMessage(JSON.stringify(message));
-      }
+    getActivePageData(e) {
+      const message = {
+        method: "getPagedData",
+        params: {
+          activePage: e
+        }
+      };
+      worker.postMessage(JSON.stringify(message));
     }
+  }
 };
 </script>
 
