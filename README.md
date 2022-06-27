@@ -2,6 +2,9 @@
 ![Logo](https://raw.githubusercontent.com/bertancakici/protein-code-challenge/main/public/git-images/protein.png)
 # Protein Code Challenge
 
+
+[PRODUCTION LINK](https://bertancakici.github.io)
+
 ## Project setup
 ```
 npm install
