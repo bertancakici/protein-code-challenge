@@ -40,33 +40,35 @@
 </template>
 
 <script>
-	// #region Internet Connection Check.
-	// bir global variable'a set edilip, offlineJobs adlı bir state'e transaction'lar doldurulabilir.
-	// online olduğunda ise offlineJobs kontrol edilir.
-	// kalan transaction'lar handle edilip, kullanılan state güncellenebilir.
-	// NOT: code challenge'da böyle bir madde yok.
-	window.addEventListener("online", () => {
-		console.log("Became online");
-	});
+// #region Internet Connection Check.
+// bir global variable'a set edilip, offlineJobs adlı bir state'e transaction'lar doldurulabilir.
+// online olduğunda ise offlineJobs kontrol edilir.
+// kalan transaction'lar handle edilip, kullanılan state güncellenebilir.
+// NOT: code challenge'da böyle bir madde yok.
+window.addEventListener("online", () => {
+	console.log("Became online");
+});
 
-	window.addEventListener("offline", () => {
-		console.log("Became offline");
-	});
-	// #endregion
+window.addEventListener("offline", () => {
+	console.log("Became offline");
+});
+// #endregion
 
-	import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 
-	import worker from "../worker";
+import worker from "/public/worker";
 
-	export default {
-		computed: {
-			...mapState("operationsModule", ["operations"]),
+export default {
+	computed: {
+		...mapGetters({
+			operations: "operationsModule/getAll"
+		}),
+	},
+	methods: {
+		async importData() {
+			const message = { method: "fetchData" };
+			worker.postMessage(JSON.stringify(message));
 		},
-		methods: {
-			async importData() {
-				const message = { method: "fetchData" };
-				worker.postMessage(JSON.stringify(message));
-			},
-		},
-	};
+	},
+};
 </script>

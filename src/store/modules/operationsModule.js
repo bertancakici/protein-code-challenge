@@ -10,8 +10,7 @@ const state = {
 
 const getters = {
     getAll() {
-        return state.operations.sort((a, b) => (b.id < a.id ? -1 : 1))
-        .filter((v, i) => i < 10);;
+        return state.operations.sort((a, b) => (b.id < a.id ? -1 : 1));
     },
     getTotal() {
         return state.operations.length;
@@ -21,7 +20,12 @@ const getters = {
 const mutations = {
     newOperation(state, uniqueId) {
         // order'landiği için ilk item son object oluyor.
-        const lastItemId = state.operations[0]?.id ?? 0 ;
+        // const lastItemId = state.operations[0]?.id ?? 0 ;
+        let lastItemId = 0;
+        let all = getters.getAll();
+        if(all.length)
+            lastItemId = all[0].id;
+
         // console.log(lastItemId);
         const newItem = {
             id : lastItemId + 1,
