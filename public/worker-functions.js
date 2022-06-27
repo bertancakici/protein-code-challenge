@@ -20,6 +20,7 @@ async function fetchDataAsync() {
     }
     return result;
 };
+
 async function openDbAsync() {
     var dbReq = await indexedDB.open("x-shop", 1);
 
@@ -42,6 +43,7 @@ async function openDbAsync() {
         };
     });
 };
+
 async function addCardsAsync(arr) {
     const cr = await clearTableAsync("cards");
     // console.log(cr, "Clearing Table Result");
@@ -69,6 +71,7 @@ async function addCardsAsync(arr) {
         };
     });
 };
+
 async function clearTableAsync(tbl) {
     const db = await openDbAsync();
 
@@ -95,7 +98,6 @@ async function getPagedDataAsync(activePageNumb) {
     const db = await openDbAsync();
     const tx = db.transaction(["cards"], "readonly");
     const store = tx.objectStore('cards');
-
 
     let pagedData = {};
 
@@ -128,13 +130,46 @@ async function getPagedDataAsync(activePageNumb) {
     };
 
     return new Promise((resolve, reject) => {
-        tx.oncomplete = event =>{
+        tx.oncomplete = event => {
             db.close();
             resolve(pagedData);
         }
         tx.onerror = event => reject(event.target);
     });
 
+}
+
+async function getAnalyzePageDataAsync() {
+    const db = await openDbAsync();
+
+    const tx = db.transaction(["cards"], "readonly");
+    const store = tx.objectStore("cards");
+    const allRecordsRequest = store.getAll();
+
+    return new Promise((resolve, reject) => {
+        let allRecords = [];
+        allRecordsRequest.onsuccess = e => {
+            allRecords = e.target.result;
+        }
+
+        tx.oncomplete = event => {
+            const groupedData = [];
+            allRecords.map((obj, i) => {
+                var item = groupedData.find(t => t.cardType == obj.credit_card_type);
+                if (typeof item == typeof undefined) {
+                    groupedData.push({
+                        cardType: obj.credit_card_type,
+                        transactionAmount: 1
+                    })
+                } else
+                    item.transactionAmount += 1;
+            });
+            resolve(groupedData);
+        }
+        tx.onerror = event => {
+            throw new Error("An Error occured while getting data from indexeddb");
+        }
+    });
 }
 
 self.onmessage = async (e) => {
@@ -150,7 +185,7 @@ self.onmessage = async (e) => {
             const insertCardResult = await addCardsAsync(dataArr);
             // console.log(insertCardResult, "insertCardResult");
             if (insertCardResult) {
-                // state güncelle.
+                // update state
                 const finishedAt = new Date();
 
                 self.postMessage(
@@ -161,13 +196,6 @@ self.onmessage = async (e) => {
                             uid: uniqueId,
                             finishedAt: finishedAt
                         }
-                    });
-
-                self.postMessage(
-                    {
-                        module: "cards",
-                        action: "insertCards",
-                        payload: dataArr
                     });
             }
         }
@@ -181,6 +209,15 @@ self.onmessage = async (e) => {
                 payload: pagedDataResult
             }
         );
+
+    } else if (process.method === 'getAnalyzePageData') {
+        const data = await getAnalyzePageDataAsync();
+        self.postMessage(
+            {
+                module: "cards",
+                action: "setGroupedData",
+                payload: data
+            });
 
     } else {
         throw new Error("Worker Function Not Found !");

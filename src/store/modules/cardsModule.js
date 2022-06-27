@@ -22,19 +22,7 @@ const getters = {
         return state.tblData;
     },
     getGroupedData(state) {
-        const groupedData = [];
-        state.cards.map((obj, i) => {
-            var item = groupedData.find(t => t.cardType == obj.credit_card_type);
-            if (typeof item == typeof undefined) {
-                groupedData.push({
-                    cardType: obj.credit_card_type,
-                    transactionAmount: 1
-                })
-            } else
-                item.transactionAmount += 1;
-        });
-
-        return groupedData;
+        return state.groupedData;
     }
 };
 
@@ -43,19 +31,13 @@ const mutations = {
         state.cards = cardArr;
     },
     setTblData(state,dto) {
-        // const startIndex = pageNumber * 10;
-        // const endIndex = startIndex == 0 ? 9 : ((pageNumber + 1) * 10) - 1;
-        // const pagedData = {
-        //     items: state.cards.slice(startIndex, endIndex),
-        //     totalPage: state.cards.length / 10 - 1,
-        //     totalRecords: state.cards.length,
-        //     activePage: pageNumber == 0 ? 1 : pageNumber,
-        //     pageSize: 10
-        // }
-
         state.tblData = dto;
 
     },
+    insertGroupedData(state, data){
+        state.groupedData = data;
+    }
+
 };
 
 const actions = {
@@ -64,6 +46,9 @@ const actions = {
     },
     setListViewData({ commit }, pagedData) {
         commit("setTblData", pagedData);
+    },
+    setGroupedData({commit}, groupedDataArr){
+        commit("insertGroupedData", groupedDataArr);
     }
 
 };

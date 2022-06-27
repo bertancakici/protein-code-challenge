@@ -66,12 +66,6 @@ import { mapGetters, mapActions } from "vuex";
 import worker from "/public/worker";
 
 export default {
-  data() {
-    return {
-      requestUrl:
-        "https://random-data-api.com/api/business_credit_card/random_card?size=100",
-    };
-  },
   computed: {
     ...mapGetters({
       operations: "operationsModule/getAll",
@@ -79,9 +73,6 @@ export default {
     })
   },
   methods: {
-    ...mapActions({
-      createOperation: "operationsModule/insertOperation",
-    }),
     async importData() {
       const message = { method: "fetchData"};
       worker.postMessage(JSON.stringify(message));

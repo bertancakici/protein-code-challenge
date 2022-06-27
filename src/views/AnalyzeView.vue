@@ -34,9 +34,16 @@
 </template>
 
 <script>
+import worker from '/public/worker'
 import { mapGetters} from 'vuex'
 
 export default {
+  async mounted(){
+    const message = {
+      method:"getAnalyzePageData"
+    }
+    await worker.postMessage(JSON.stringify(message));
+  },
   computed:{
     ...mapGetters({
       groupedData: "cardsModule/getGroupedData"
