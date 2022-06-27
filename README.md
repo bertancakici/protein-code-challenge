@@ -3,7 +3,7 @@
 # Protein Code Challenge
 
 
-Live at : [https://bertancakici.github.io](https://bertancakici.github.io)
+## Live at : [https://bertancakici.github.io](https://bertancakici.github.io)
 
 ## Project setup
 ```
