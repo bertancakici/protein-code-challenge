@@ -56,7 +56,7 @@
 
 	import { mapState } from "vuex";
 
-	import worker from "/public/worker";
+	import worker from "../worker";
 
 	export default {
 		computed: {

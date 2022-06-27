@@ -37,7 +37,7 @@
 </template>
 
 <script>
-	import worker from "/public/worker";
+	import worker from "../worker";
 	import { mapState } from "vuex";
 
 	export default {
