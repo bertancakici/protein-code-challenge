@@ -186,7 +186,7 @@ self.onmessage = async (e) => {
             // console.log(insertCardResult, "insertCardResult");
             if (insertCardResult) {
                 // update state
-                const finishedAt = new Date();
+                const finishedAt = new Date().getTime();
 
                 self.postMessage(
                     {

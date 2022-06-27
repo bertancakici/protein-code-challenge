@@ -30,7 +30,7 @@ const mutations = {
         const newItem = {
             id : lastItemId + 1,
             uid: uniqueId,
-            startedAt : new Date(),
+            startedAt : new Date().getTime(),
             finishedAt : null,
             inProgress:true
         }

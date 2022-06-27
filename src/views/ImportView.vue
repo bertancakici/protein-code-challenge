@@ -17,8 +17,8 @@
 							<v-list-item-content>
 								<v-list-item-title>
 									<!-- {{ item.text }} -->
-									Started/Finished At {{ item.startedAt }} <br />
-									<strong> transaction time: calculate</strong>
+									Operation #{{ item.uid }} <br />
+									<strong > process time: {{ (item.finishedAt != null) ? `${( item.finishedAt - item.startedAt) / 1000} (ms)` : `processing...`}}</strong>
 								</v-list-item-title>
 							</v-list-item-content>
 
