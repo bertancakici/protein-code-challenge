@@ -159,11 +159,12 @@ async function getAnalyzePageDataAsync() {
                     groupedData.push({
                         cardType: obj.credit_card_type,
                         transactionAmount: 1
-                    })
+                    });
                 } else
                     item.transactionAmount += 1;
             });
-            resolve(groupedData);
+
+            resolve({  items:groupedData, totalRecords: allRecords.length,});
         }
         tx.onerror = event => {
             throw new Error("An Error occured while getting data from indexeddb");

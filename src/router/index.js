@@ -1,20 +1,13 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-// #region Views
-import HomeView from "../views/HomeView.vue";
-// #endregion
 
 Vue.use(VueRouter);
 
 // #region Routes
-export const routes = [{
-        path: "/",
-        name: "home",
-        component: HomeView,
-    },
+export const routes = [
     {
-        path: "/import",
+        path: "/",
         name: "import",
         component: () =>
             import ("../views/ImportView.vue"),
