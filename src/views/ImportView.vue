@@ -18,7 +18,12 @@
 								<v-list-item-title>
 									<!-- {{ item.text }} -->
 									Operation #{{ item.uid }} <br />
-									<strong > process time: {{ (item.finishedAt != null) ? `${( item.finishedAt - item.startedAt) / 1000} (ms)` : `processing...`}}</strong>
+									<strong>
+										process time:
+										{{
+											item.finishedAt != null ? `${(item.finishedAt - item.startedAt) / 1000} (ms)` : `processing...`
+										}}</strong
+									>
 								</v-list-item-title>
 							</v-list-item-content>
 
@@ -40,35 +45,35 @@
 </template>
 
 <script>
-// #region Internet Connection Check.
-// bir global variable'a set edilip, offlineJobs adlı bir state'e transaction'lar doldurulabilir.
-// online olduğunda ise offlineJobs kontrol edilir.
-// kalan transaction'lar handle edilip, kullanılan state güncellenebilir.
-// NOT: code challenge'da böyle bir madde yok.
-window.addEventListener("online", () => {
-	console.log("Became online");
-});
+	// #region Internet Connection Check.
+	// bir global variable'a set edilip, offlineJobs adlı bir state'e transaction'lar doldurulabilir.
+	// online olduğunda ise offlineJobs kontrol edilir.
+	// kalan transaction'lar handle edilip, kullanılan state güncellenebilir.
+	// NOT: code challenge'da böyle bir madde yok.
+	window.addEventListener("online", () => {
+		console.log("Became online");
+	});
 
-window.addEventListener("offline", () => {
-	console.log("Became offline");
-});
-// #endregion
+	window.addEventListener("offline", () => {
+		console.log("Became offline");
+	});
+	// #endregion
 
-import { mapGetters } from "vuex";
+	import { mapGetters } from "vuex";
 
-import worker from "/public/worker";
+	import worker from "/public/worker";
 
-export default {
-	computed: {
-		...mapGetters({
-			operations: "operationsModule/getAll"
-		}),
-	},
-	methods: {
-		async importData() {
-			const message = { method: "fetchData" };
-			worker.postMessage(JSON.stringify(message));
+	export default {
+		computed: {
+			...mapGetters({
+				operations: "operationsModule/getAll",
+			}),
 		},
-	},
-};
+		methods: {
+			importData() {
+				const message = { method: "fetchData" };
+				worker.postMessage(JSON.stringify(message));
+			},
+		},
+	};
 </script>

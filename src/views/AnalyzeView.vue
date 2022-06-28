@@ -37,11 +37,11 @@
 	import { mapState } from "vuex";
 
 	export default {
-		async mounted() {
+		mounted() {
 			const message = {
 				method: "getAnalyzePageData",
 			};
-			await worker.postMessage(JSON.stringify(message));
+			worker.postMessage(JSON.stringify(message));
 		},
 		computed: {
 			...mapState("cardsModule", ["groupedData"]),

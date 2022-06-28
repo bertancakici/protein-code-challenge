@@ -52,14 +52,14 @@
 				saveActivePage: true,
 			};
 		},
-		async mounted() {
+		mounted() {
 			const message = {
 				method: "getPagedData",
 				params: {
 					activePage: this.saveActivePage == true ? this.lastActivePage : 0,
 				},
 			};
-			await worker.postMessage(JSON.stringify(message));
+			worker.postMessage(JSON.stringify(message));
 		},
 		computed: {
 			...mapState("cardsModule", {
